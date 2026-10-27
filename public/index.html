@@ -1,6 +1,56 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TraceFence — inspect before replay</title><meta name="description" content="Inspect agent tool-call traces locally. Find uncertain writes and idempotency conflicts before replaying a run."><link rel="stylesheet" href="styles.css"><script type="module" src="vendor/byo-kit.js"></script><script type="module" src="app.js"></script></head><body>
-<header><a class="brand" href="/">TraceFence <span>INSPECT BEFORE REPLAY</span></a><a href="https://github.com/dallascrilley/tracefence">GitHub ↗</a></header>
-<main><section class="intro"><p class="eyebrow">A timeout is not proof that nothing happened.</p><h1>Retry the run.<br><span>Not the side effects.</span></h1><p>Inspect a tool-call trace and get an explained replay plan. Completed writes are skipped. Uncertain writes stay with a human.</p><div class="toolbar"><button id="sample" class="primary">Inspect sample trace</button><button id="download" disabled>Export plan JSON</button><button id="reset">Clear trace</button><span class="local">Local processing · No account · No AI required</span></div></section>
-<div class="layout"><aside><h2>Your trace stays here</h2><p>Drop JSON, NDJSON or CSV. Nothing is uploaded. Inputs and results remain in this page's memory until cleared.</p><byo-data label="Bring your own trace" accept=".json,.ndjson,.csv" max-bytes="5242880" paste-placeholder='[{"id":"1","tool":"lookup","effect":"read","status":"succeeded","arguments":{}}]'></byo-data><details><summary>Input format</summary><p>Each row needs a unique <code>id</code>, <code>tool</code>, declared <code>effect</code> (read/write/unknown), <code>status</code> (succeeded/failed/timeout/unknown), and an <code>arguments</code> object. Optional: <code>idempotency_key</code>.</p><p>CSV: use a JSON object string in the arguments cell. Effects must be supplied explicitly.</p></details><p class="fine">The tool trusts the trace's declarations. It does not verify destination state, infer permissions, execute calls or guarantee exactly-once delivery.</p></aside>
-<section class="analysis" aria-live="polite"><div id="empty"><div class="empty-icon">↻</div><h2>What will happen if you replay?</h2><p>Start with the sample: an invoice succeeded, a notification timed out, then a retry reused the wrong key.</p></div><div id="workspace" hidden><div class="metrics"><div><b id="total">0</b><span>calls inspected</span></div><div><b id="skipped">0</b><span>completed writes skipped</span></div><div><b id="review">0</b><span>need review</span></div><div><b id="reads">0</b><span>read proposals</span></div></div><div class="section-title"><h2>Every decision has a reason</h2><button id="reveal" disabled>Show replay plan →</button></div><p id="conflicts" class="warning"></p><div id="plan" hidden><strong>0 writes scheduled.</strong><span> Replay declared reads. Skip completed writes. Reconcile every uncertain write and key conflict before any retry.</span></div><div class="table-wrap"><table><thead><tr><th>Call</th><th>Tool</th><th>Status</th><th>Decision</th><th>Why</th></tr></thead><tbody id="results"></tbody></table></div></div></section></div>
-<footer>Deterministic rules. Inspectable output. <a href="sample.json" download>Download sample</a> · <a href="https://github.com/dallascrilley/tracefence#input-contract">Input contract &amp; limits</a></footer></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TraceFence | Tool-call replay review</title>
+  <meta name="description" content="Review completed and uncertain tool calls before replaying an agent run. JSON, NDJSON and CSV stay in your browser.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="vendor/byo-kit.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div><a class="brand" href="/">TraceFence</a><span class="app-description">Tool-call replay review</span></div>
+    <nav aria-label="Project"><a href="https://github.com/dallascrilley/tracefence">Source &amp; CLI</a></nav>
+  </header>
+  <main>
+    <div class="page-heading">
+      <div><h1>Review a trace</h1><p>Check which calls completed and which outcomes need confirmation before a retry.</p></div>
+      <div class="toolbar"><button id="sample" class="primary">Load sample trace</button><button id="download" disabled>Export plan</button><button id="reset">Clear</button></div>
+    </div>
+    <div class="layout">
+      <aside aria-labelledby="input-heading">
+        <div class="pane-heading"><h2 id="input-heading">Input</h2><a href="sample.json" download>Sample JSON</a></div>
+        <byo-data label="Open a trace file" accept=".json,.ndjson,.csv" max-bytes="5242880" paste-placeholder='[{"id":"1","tool":"lookup","effect":"read","status":"succeeded","arguments":{}}]'></byo-data>
+        <p class="input-note">Files are processed in this tab. Clear removes the input and results from memory.</p>
+        <details class="format">
+          <summary>Trace format</summary>
+          <p>Each call needs these fields:</p>
+          <dl><dt>id</dt><dd>Unique call ID</dd><dt>tool</dt><dd>Tool name</dd><dt>effect</dt><dd>read / write / unknown</dd><dt>status</dt><dd>succeeded / failed / timeout / unknown</dd><dt>arguments</dt><dd>JSON object</dd></dl>
+          <p><code>idempotency_key</code> is optional. In CSV, store <code>arguments</code> as a JSON string.</p>
+        </details>
+        <p class="input-note">Effects and outcomes come from your trace. Confirm uncertain writes in the destination system before retrying.</p>
+      </aside>
+      <section class="analysis" aria-labelledby="review-heading">
+        <div class="pane-heading"><h2 id="review-heading">Calls</h2><span class="input-note">Inspection only</span></div>
+        <div id="empty">
+          <h3>No trace loaded</h3>
+          <p>The sample contains seven calls: an invoice retry, a completed ticket update and a notification with an unknown outcome.</p>
+          <p>Load it to review the decisions, or open your own trace.</p>
+        </div>
+        <div id="workspace" hidden>
+          <div class="trace-summary" aria-live="polite"><span><b id="total">0</b> calls</span><span class="summary-review"><b id="review">0</b> to review</span><span><b id="skipped">0</b> completed</span><span><b id="reads">0</b> reads</span></div>
+          <div class="review-toolbar"><p id="conflicts" class="warning"></p><button id="reveal" disabled>Review summary</button></div>
+          <div id="plan" hidden><strong>0 writes scheduled.</strong> This tool proposes read replays and skips completed writes. Check the destination for every uncertain write or conflicting key.</div>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Tool-call decisions">
+            <table><thead><tr><th scope="col">Call / tool</th><th scope="col">Recorded status</th><th scope="col">Decision</th><th scope="col">Reason</th></tr></thead><tbody id="results"></tbody></table>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer><p>TraceFence uses the effects and statuses you supply. It cannot confirm what happened in another system and never executes a call.</p><a href="https://github.com/dallascrilley/tracefence#input-contract">Input contract and limits</a></footer>
+  </main>
+</body>
+</html>

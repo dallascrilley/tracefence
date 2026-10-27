@@ -11,6 +11,6 @@ Alternatives considered:
 
 No AI call is needed for exact status/key comparisons. This avoids making a model decide whether a money-moving retry is safe. No inferred effect labels, execution, account setup or upload. Inputs are supplied declarations, not verified destination facts. Read-only declarations must be trustworthy before a real replay.
 
-Design: neutral application shell, blue primary action, input pane and decision table; sample-first journey; browser memory only. Source fallback: byo-kit because this dedicated Cloudflare deployment uses a different adapter from App Foundry's accepted Netlify route. Domain logic is pure and separate from presentation.
+Design: compact input pane and call table, with a small status summary. The page opens with the task name, “Review a trace”. Browser memory holds the supplied data. See docs/DESIGN.md for the correction after Dallas rejected the initial slogan and layout. Source fallback: byo-kit because this dedicated Cloudflare deployment uses a different adapter from App Foundry's accepted Netlify route. Domain logic is pure and separate from presentation.
 
 Acceptance: successful writes skipped; all uncertain writes held regardless of key; argument-order equality; same tool/key with changed arguments holds every member; unknown effects held; own-data journey makes zero requests; source text is inert; JSON export, clear, invalid input, mobile and CLI proven. Stop at inspection, not execution or a full observability platform.

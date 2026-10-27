@@ -1,22 +1,22 @@
 # TraceFence
 
-**Inspect before replaying an agent run.** Find uncertain writes and conflicting idempotency keys without uploading your trace.
+TraceFence reviews agent tool-call logs before a retry. Open a trace to see completed writes, uncertain outcomes and conflicting idempotency keys. Processing runs in your browser.
 
 [Try the live demo](https://tracefence.dallascrilley.com) · [Sample trace](public/sample.json) · [Concept & prior art](docs/CONCEPT.md)
 
 ![Inspect a trace and reveal an explained replay plan](docs/demo.gif)
 
-A timeout does not tell you whether an invoice, ticket update or notification already happened. TraceFence turns a tool-call export into an explained inspection plan:
+A timeout does not tell you whether an invoice, ticket update or notification already happened. TraceFence reads the effects and outcomes recorded in a tool-call export:
 
-- **Replay read:** the producer explicitly declared a read-only operation.
-- **Skip completed:** the write is recorded as successful.
-- **Review:** a write is uncertain, its effect is unknown, or the same tool/key carries different arguments.
+- **Replay read.** the producer explicitly declared a read-only operation.
+- **Skip completed.** the write is recorded as successful.
+- **Review.** a write is uncertain, its effect is unknown, or the same tool/key carries different arguments.
 
-Every decision includes its reason and related call IDs. An idempotency key is never treated as proof that a destination enforces it. No tool is executed.
+The table shows a reason and related call IDs for each decision. An idempotency key is never treated as proof that a destination enforces it. No tool is executed.
 
 ## Try it
 
-Open the demo and choose **Inspect sample trace**, or drop/paste your own JSON, NDJSON or CSV. Export the resulting plan as JSON. Processing is entirely in your browser; traces are held only in page memory, and **Clear trace** removes the input and result. No account, server upload, API key or AI model is required.
+Open the demo and choose **Load sample trace**, or drop/paste your own JSON, NDJSON or CSV. Export the resulting plan as JSON. Processing is entirely in your browser; traces are held only in page memory, and **Clear** removes the input and result. No account, server upload, API key or AI model is required.
 
 ```sh
 node bin/tracefence.js --json public/sample.json
@@ -35,7 +35,7 @@ Required: unique string `id`, string `tool`, `effect` (`read`, `write`, `unknown
 
 Tool+key scopes key conflicts; canonical JSON compares argument objects independently of key ordering. Arrays retain their order. Related calls share the same tool and arguments, which may represent intentional repeated work: relatedness alone is not evidence of a duplicate effect.
 
-**Limits:** effect labels and statuses are assertions from the producer. A claimed read can still be dangerous if mislabeled. This tool does not query the destination, validate permissions, execute replays, prove exactly-once behavior, estimate money saved or infer causality. Reconcile uncertain external effects against their owning system before retrying. There is no automatic OpenTelemetry/LangSmith adapter yet; use the documented normalized format.
+Effect labels and statuses come from the trace producer. A claimed read can still be dangerous if mislabeled. This tool does not query the destination, validate permissions, execute replays, prove exactly-once behavior, estimate money saved or infer causality. Reconcile uncertain external effects against their owning system before retrying. There is no automatic OpenTelemetry/LangSmith adapter yet; use the documented normalized format.
 
 ## Develop and verify
 
@@ -53,4 +53,4 @@ Depot runs `script/cibuild` on each source push. Unit/CLI tests cover the actual
 
 ## Status
 
-Initial public release: browser inspector plus dependency-free CLI. The included trace is synthetic and clearly labeled. No claim of external adoption, production incident reduction or independently verified trace declarations. MIT licensed; built with [byo-kit](https://github.com/dallascrilley/byo-kit).
+Initial public release: browser inspector plus dependency-free CLI. The included trace is synthetic and clearly labeled. The rules operate on supplied trace data. MIT licensed. Built with [byo-kit](https://github.com/dallascrilley/byo-kit).
