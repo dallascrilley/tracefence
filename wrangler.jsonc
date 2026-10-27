@@ -1,0 +1,8 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tracefence",
+  "compatibility_date": "2026-10-01",
+  "assets": {"directory":"./public"},
+  "routes": [{"pattern":"tracefence.dallascrilley.com","custom_domain":true}],
+  "observability": {"enabled":false}
+}

@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';
+test('CLI inspects a real file with machine-readable output',()=>{const r=spawnSync(process.execPath,['bin/tracefence.js','--json','public/sample.json'],{encoding:'utf8'});assert.equal(r.status,0);assert.equal(JSON.parse(r.stdout).summary.writes_scheduled,0);});
+test('CLI accepts stdin and returns a stable invalid-input exit',()=>{const r=spawnSync(process.execPath,['bin/tracefence.js','-'],{input:'{"wrong":true}',encoding:'utf8'});assert.equal(r.status,2);assert.ok(JSON.parse(r.stderr).error);});

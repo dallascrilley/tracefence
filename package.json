@@ -1,0 +1,15 @@
+{
+  "name": "tracefence",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "verify": "node scripts/verify.mjs",
+    "dev": "node tools/static-server.mjs public 8787",
+    "demo": "node tools/record-demo.mjs --serve public --steps docs/demo-steps.json --out docs/demo.gif --max-seconds 9"
+  },
+  "bin": {
+    "tracefence": "bin/tracefence.js"
+  }
+}

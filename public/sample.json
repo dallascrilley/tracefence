@@ -1,0 +1,75 @@
+[
+  {
+    "id": "read-1",
+    "tool": "crm.lookup",
+    "effect": "read",
+    "status": "succeeded",
+    "arguments": {
+      "customer": "demo-17"
+    }
+  },
+  {
+    "id": "write-done",
+    "tool": "ticket.update",
+    "effect": "write",
+    "status": "succeeded",
+    "arguments": {
+      "ticket": "demo-42",
+      "state": "invoiced"
+    },
+    "idempotency_key": "ticket-42"
+  },
+  {
+    "id": "write-1",
+    "tool": "invoice.create",
+    "effect": "write",
+    "status": "succeeded",
+    "arguments": {
+      "customer": "demo-17",
+      "amount": 125
+    },
+    "idempotency_key": "invoice-17"
+  },
+  {
+    "id": "retry-1",
+    "tool": "invoice.create",
+    "effect": "write",
+    "status": "timeout",
+    "arguments": {
+      "amount": 125,
+      "customer": "demo-17"
+    },
+    "idempotency_key": "invoice-17"
+  },
+  {
+    "id": "write-2",
+    "tool": "message.send",
+    "effect": "write",
+    "status": "timeout",
+    "arguments": {
+      "recipient": "demo-user",
+      "message": "Your invoice is ready"
+    }
+  },
+  {
+    "id": "retry-2",
+    "tool": "message.send",
+    "effect": "write",
+    "status": "failed",
+    "arguments": {
+      "message": "Your invoice is ready",
+      "recipient": "demo-user"
+    }
+  },
+  {
+    "id": "conflict-1",
+    "tool": "invoice.create",
+    "effect": "write",
+    "status": "failed",
+    "arguments": {
+      "customer": "demo-17",
+      "amount": 250
+    },
+    "idempotency_key": "invoice-17"
+  }
+]

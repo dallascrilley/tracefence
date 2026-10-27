@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { inspectTrace } from '../public/src/standout.js';
+const call=(extra={})=>({id:'a',tool:'create',effect:'write',status:'timeout',arguments:{amount:10},...extra});
+test('uncertain writes are held even with an idempotency key',()=>{assert.equal(inspectTrace([call({idempotency_key:'x'})]).calls[0].action,'review');});
+test('completed writes skipped, reads proposed, unknown effects held',()=>{const r=inspectTrace([call({status:'succeeded'}),call({id:'b',effect:'read'}),call({id:'c',effect:'unknown'})]);assert.deepEqual(r.calls.map(x=>x.action),['skip_completed','replay_read','review']);assert.equal(r.summary.writes_scheduled,0);});
+test('same tool and key with changed arguments fences every member',()=>{const r=inspectTrace([call({idempotency_key:'x',status:'succeeded'}),call({id:'b',idempotency_key:'x',arguments:{amount:20}})]);assert.equal(r.summary.key_conflicts,2);assert.ok(r.calls.every(x=>x.action==='review'));});
+test('key scope includes tool; argument order is irrelevant',()=>{const r=inspectTrace([call({idempotency_key:'x',arguments:{a:1,b:2}}),call({id:'b',idempotency_key:'x',arguments:{b:2,a:1}}),call({id:'c',tool:'other',idempotency_key:'x',arguments:{a:3}})]);assert.equal(r.summary.key_conflicts,0);assert.deepEqual(r.calls[0].related_ids,['b']);});
+test('CSV arguments are parsed while malformed data is rejected',()=>{assert.equal(inspectTrace([call({arguments:'{"x":1}'})]).summary.total,1);assert.throws(()=>inspectTrace([call({arguments:'oops'})]),/valid JSON/);});
+test('reject malformed calls rather than guessing their effects',()=>{for(const bad of [[],[call({effect:'POST'})],[call({status:'ok'})],[call({arguments:null})],[call(),call()],[call({idempotency_key:3})]])assert.throws(()=>inspectTrace(bad));});
+test('input is never mutated and arbitrary tool names are inert data',()=>{const rows=[call({tool:'<img src=x onerror=alert(1)>'})];const before=JSON.stringify(rows);assert.equal(inspectTrace(rows).summary.review,1);assert.equal(JSON.stringify(rows),before);});
+test('no combination schedules a write, including successful duplicate retries',()=>{for(const status of ['succeeded','failed','timeout','unknown'])for(const effect of ['read','write','unknown']){const r=inspectTrace([call({status,effect}),call({id:'b',status,effect})]);assert.equal(r.summary.writes_scheduled,0);assert.ok(!r.calls.some(x=>x.effect!=='read'&&x.action==='replay_read'));}});
