@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {deployedUrl} from '../tools/release-url.mjs';
+test('custom-domain deploy output produces actual endpoint, not a docs link',()=>assert.equal(deployedUrl('See https://developers.cloudflare.com\n  tracefence.dallascrilley.com (custom domain)\nCurrent Version ID: x'),'https://tracefence.dallascrilley.com'));
+test('worker endpoint accepted; missing endpoint fails closed',()=>{assert.equal(deployedUrl('  https://example.dallasdotjs.workers.dev'),'https://example.dallasdotjs.workers.dev');assert.throws(()=>deployedUrl('Success: docs at https://example.com'));});
