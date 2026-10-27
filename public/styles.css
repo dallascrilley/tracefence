@@ -59,6 +59,7 @@ byo-data {
 }
 byo-data::part(dropzone) { padding: var(--s4) var(--s3); border-radius: 4px; background: var(--bg); }
 byo-data::part(button) { border-radius: 4px; font-family: var(--font); }
+byo-data::part(dropzone), byo-data::part(button), byo-data::part(textarea) { transition: none; }
 byo-data::part(textarea) { min-width: 0; width: 72px; flex: 1; }
 byo-data::part(button) { padding: var(--s2); font-size: 12px; }
 .input-note { color: var(--muted); font-size: 12px; }
@@ -106,7 +107,18 @@ footer a { white-space: nowrap; }
   aside { border-right: 0; border-bottom: 1px solid var(--line); }
   .format { margin: var(--s4) 0; }
   .review-toolbar { flex-direction: column; align-items: flex-start; }
-  table { min-width: 600px; }
+  .table-wrap { overflow-x: visible; }
+  table, tbody { display: block; width: 100%; }
+  thead { display: none; }
+  tr { display: block; border-bottom: 1px solid var(--line); padding: var(--s3) 0; }
+  td { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: var(--s3); border: 0; padding: var(--s1) var(--s2); }
+  td::before { content: attr(data-label); color: var(--muted); font-weight: 400; }
+  td:first-child { display: block; margin-bottom: var(--s2); padding: var(--s2); }
+  td:first-child::before { content: none; }
+  .call-name, .tool-name { display: inline; }
+  .tool-name { margin-left: var(--s2); }
+  .reason-value { min-width: 0; }
+  .reason-value small { margin-top: var(--s1); }
   footer { flex-direction: column; gap: var(--s2); }
   .toolbar { flex-shrink: 1; }
 }

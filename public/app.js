@@ -16,9 +16,9 @@ function show(rows) {
   for(const row of report.calls) {
     const tr=document.createElement('tr');tr.dataset.action=row.action;
     const identity=document.createElement('td');identity.append(text('span',row.id,'call-name'),text('span',row.tool,'tool-name'));
-    tr.append(identity,text('td',row.status));
-    const decision=text('td',({review:'Review',skip_completed:'Skip completed',replay_read:'Replay read'})[row.action],'decision '+row.action);tr.append(decision);
-    const detail=text('td',row.reason);if(row.related_ids.length)detail.append(text('small','Related: '+row.related_ids.join(', ')));tr.append(detail);$('#results').append(tr);
+    const status=text('td',row.status);status.dataset.label='Status';tr.append(identity,status);
+    const decision=text('td',({review:'Review',skip_completed:'Skip completed',replay_read:'Replay read'})[row.action],'decision '+row.action);decision.dataset.label='Decision';tr.append(decision);
+    const detail=document.createElement('td');detail.dataset.label='Reason';const reason=text('span',row.reason,'reason-value');if(row.related_ids.length)reason.append(text('small','Related: '+row.related_ids.join(', ')));detail.append(reason);tr.append(detail);$('#results').append(tr);
   }
   $('#download').disabled=false;$('#reveal').disabled=false;$('#plan').hidden=true;
   if(narrow.matches) $('.format').open=false;

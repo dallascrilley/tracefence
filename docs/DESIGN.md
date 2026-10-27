@@ -8,4 +8,4 @@ Use a compact application header, a page title that names the task, an input pan
 
 Copy review uses the installed unslop skill. Design review uses applicable Hallmark guidance. Its marketing-page prescriptions do not override an inspection table's need for density, system fonts or consistent status labels. Human judgment and actual rendered states establish quality; keyword scans and self-assigned scores do not.
 
-Check empty, loaded, invalid and cleared input; sample and personal data; export; light/dark; keyboard focus; 320, 375, 414, 768 and desktop widths. The page must stay within the viewport. The call table may scroll within its labeled region on small screens. Show technical limits where they affect replay decisions.
+Check empty, loaded, invalid and cleared input; sample and personal data; export; light/dark; keyboard focus; 320, 375, 414, 768 and desktop widths. The page must stay within the viewport. At phone widths each call becomes a labeled row group so its status, decision and full reason remain visible without sideways scrolling. Show technical limits where they affect replay decisions.
