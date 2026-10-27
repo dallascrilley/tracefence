@@ -4,3 +4,6 @@ node_modules/
 portfolio-handoff.json
 timing.json
 release-receipt.json
+
+!docs/demo.gif
+!docs/demo-final.png
