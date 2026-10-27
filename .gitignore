@@ -7,3 +7,5 @@ release-receipt.json
 
 !docs/demo.gif
 !docs/demo-final.png
+
+.wrangler/
