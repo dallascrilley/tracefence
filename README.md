@@ -54,3 +54,11 @@ Depot runs `script/cibuild` on each source push. Unit/CLI tests cover the actual
 ## Status
 
 Initial public release: browser inspector plus dependency-free CLI. The included trace is synthetic and clearly labeled. The rules operate on supplied trace data. MIT licensed. Built with [byo-kit](https://github.com/dallascrilley/byo-kit).
+
+<!-- byo-kit:case-study:start -->
+
+## Case study
+
+[Treat timed-out agent writes as unknown outcomes](https://dallascrilley.com/writing/tracefence-unknown-outcomes/)
+
+<!-- byo-kit:case-study:end -->
